@@ -29,7 +29,7 @@ function main($argv)
 
         case 'info':
             $opts = parseOpts(implode(' ', array_slice($args, 1)));
-            info($args[0], $opts['parser'] ?? null);
+            info($args[0], $opts);
             break;
 
         default:
@@ -58,12 +58,13 @@ function help()
         '    php-whois {action} [arg1 arg2 ... argN]',
         '    php-whois help|--help|-h',
         '    php-whois lookup {domain}',
-        '    php-whois info {domain} [--parser {type}]',
+        '    php-whois info {domain} [--parser {type}] [--host {whois}]',
         '',
         '  Examples',
         '    php-whois lookup google.com',
         '    php-whois info google.com',
         '    php-whois info google.com --parser block',
+        '    php-whois info ya.ru --host whois.nic.ru --parser auto',
         '',
         '',
     ]);
@@ -84,40 +85,71 @@ function lookup(string $domain)
     var_dump($result);
 }
 
-function info(string $domain, string $parserType = null)
+function info(string $domain, array $options = [])
 {
+    $options = array_replace([
+        'host' => null,
+        'parser' => null,
+        'file' => null,
+    ], $options);
+
     echo implode("\n", [
         '  action: info',
         "  domain: '{$domain}'",
-        "  parser: '{$parserType}'",
+        sprintf("  options: %s", json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)),
         '',
         '',
     ]);
 
-    $tld = Factory::get()->createWhois()->getTldModule();
-    if ($parserType) {
+    $loader = null;
+    if ($options['file']) {
+        $loader = new \Iodev\Whois\Loaders\FakeSocketLoader();
+        $loader->text = file_get_contents($options['file']);
+    }
+
+    $tld = Factory::get()->createWhois($loader)->getTldModule();
+    $servers = $tld->matchServers($domain);
+
+    if (!empty($options['host'])) {
+        $host = $options['host'];
+        $filteredServers = array_filter($servers, function (\Iodev\Whois\Modules\Tld\TldServer $server) use ($host) {
+            return $server->getHost() == $host;
+        });
+        if (count($filteredServers) == 0 && count($servers) > 0) {
+            $filteredServers = [$servers[0]];
+        }
+        $servers = array_map(function (\Iodev\Whois\Modules\Tld\TldServer $server) use ($host) {
+            return new \Iodev\Whois\Modules\Tld\TldServer(
+                $server->getZone(),
+                $host,
+                $server->isCentralized(),
+                $server->getParser(),
+                $server->getQueryFormat()
+            );
+        }, $filteredServers);
+    }
+
+    if (!empty($options['parser'])) {
         try {
-            $parser = Factory::get()->createTldParser($parserType);
+            $parser = Factory::get()->createTldParser($options['parser']);
         } catch (\Throwable $e) {
-            echo "\nCannot create TLD parser with type '$parserType'\n\n";
+            echo "\nCannot create TLD parser with type '{$options['parser']}'\n\n";
             throw $e;
         }
-        $newServers = [];
-        foreach ($tld->getServers() as $server) {
-            $newServers[] = new \Iodev\Whois\Modules\Tld\TldServer(
+        $servers = array_map(function (\Iodev\Whois\Modules\Tld\TldServer $server) use ($parser) {
+            return new \Iodev\Whois\Modules\Tld\TldServer(
                 $server->getZone(),
                 $server->getHost(),
                 $server->isCentralized(),
                 $parser,
                 $server->getQueryFormat()
             );
-        }
-        $tld->setServers($newServers);
+        }, $servers);
     }
 
-    $result = $tld->loadDomainInfo($domain);
+    [, $info] = $tld->loadDomainData($domain, $servers);
 
-    var_dump($result);
+    var_dump($info);
 }
 
 main($argv);

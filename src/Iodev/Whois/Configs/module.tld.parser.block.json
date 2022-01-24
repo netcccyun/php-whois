@@ -65,7 +65,8 @@
     "~^(Name|Last[-_\\s]Name|First[-_\\s]Name|Descr)$~ui"
   ],
   "registrarKeys": [
-    "~^(Current|Sponsoring)?[-_\\s]?Registr?ar[-_\\s]?(Name|Organization|Handle|Created)?$~ui"
+    "~^(Current|Sponsoring)?[-_\\s]?Registr?ar[-_\\s]?(Name|Organization|Handle|Created)?$~ui",
+    "~^Authorized[\\s]Agency$~ui"
   ],
   "statesKeys": [
     "~^(Domain|Registry|Registration|Ren|Epp)[-_\\s]?(Status|State)$~ui",
@@ -88,7 +89,9 @@
   ],
   "domainSubsets": [
     {"__HEADER__": "domain", "name": "$domain"},
-    {"~^(complete\\s+)?(domain|domainname|domain[\\s_]+?name|dominio|query)\\b~ui": "~\\b$domain\\b~ui"}
+    {"__HEADER__": "domain", "name": "$domainUnicode"},
+    {"~^(complete\\s+)?(domain|domainname|domain[\\s_]+?name|dominio|query)\\b~ui": "~\\b$domain\\b~ui"},
+    {"~^(complete\\s+)?(domain|domainname|domain[\\s_]+?name|dominio|query)\\b~ui": "~\\b$domainUnicode\\b~ui"}
   ],
   "primarySubsets": [
     {"admin-c": "", "tech-c": "", "nserver": "", "status": ""}

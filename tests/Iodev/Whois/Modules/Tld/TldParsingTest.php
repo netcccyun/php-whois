@@ -197,6 +197,10 @@ class TldParsingTest extends TestCase
             [ "free.af", ".af/free.txt", null ],
             [ "google.com.af", ".af/google.com.af.txt", ".af/google.com.af.json" ],
 
+            // .AFRICA
+            [ "free.africa", ".africa/free.txt", null ],
+            [ "google.africa", ".africa/google.africa.txt", ".africa/google.africa.json" ],
+
             // .AG
             [ "free.ag", ".ag/free.txt", null ],
             [ "google.com.ag", ".ag/google.com.ag.txt", ".ag/google.com.ag.json" ],
@@ -210,9 +214,9 @@ class TldParsingTest extends TestCase
             [ "google.am", ".am/google.am.txt", ".am/google.am.json" ],
             [ "google.com.am", ".am/google.com.am.txt", ".am/google.com.am.json" ],
 
-            // .AO
-            [ "free.ao", ".ao/free.txt", null ],
-            [ "google.it.ao", ".ao/google.it.ao.txt", ".ao/google.it.ao.json" ],
+            // .IT.AO
+            [ "free.it.ao", ".it.ao/free.txt", null ],
+            [ "google.it.ao", ".it.ao/google.it.ao.txt", ".it.ao/google.it.ao.json" ],
 
             // .AS
             [ "free.as", ".as/free.txt", null ],
@@ -569,6 +573,10 @@ class TldParsingTest extends TestCase
             [ "free.kr", ".kr/free.txt", null ],
             [ "google.co.kr", ".kr/google.co.kr.txt", ".kr/google.co.kr.json" ],
 
+            // .KW
+            [ "free.kw", ".kw/free.txt", null ],
+            [ "google.com.kw", ".kw/google.com.kw.txt", ".kw/google.com.kw.json" ],
+
             // .KZ
             [ "free.kz", ".kz/free.txt", null ],
             [ "google.kz", ".kz/google.kz.txt", ".kz/google.kz.json" ],
@@ -894,6 +902,10 @@ class TldParsingTest extends TestCase
             // .TR
             [ "free.tr", ".tr/free.txt", null ],
             // [ "google.com.tr", ".tr/google.com.tr.txt", ".tr/google.com.tr.json" ],
+
+            // .TUBE
+            [ "free.tube", ".tube/free.txt", null ],
+            [ "google.tube", ".tube/google.tube.txt", ".tube/google.tube.json" ],
 
             // .TW
             [ "free.tw", ".tw/free.txt", null ],
