@@ -42,7 +42,7 @@ class Factory implements IFactory
      * @param ILoader|null $loader
      * @return Whois
      */
-    public function createWhois(ILoader $loader = null): Whois
+    public function createWhois(?ILoader $loader = null): Whois
     {
         $whois = new Whois($loader ?: $this->createLoader());
         $whois->setFactory($this);
@@ -84,7 +84,7 @@ class Factory implements IFactory
      * @param TldParser|null $defaultParser
      * @return TldServer[]
      */
-    public function createTldSevers($configs = null, TldParser $defaultParser = null): array
+    public function createTldSevers($configs = null, ?TldParser $defaultParser = null): array
     {
         $configs = is_array($configs) ? $configs : Config::load("module.tld.servers");
         $defaultParser = $defaultParser ?: $this->createTldParser();
@@ -100,7 +100,7 @@ class Factory implements IFactory
      * @param TldParser|null $defaultParser
      * @return TldServer
      */
-    public function createTldSever(array $config, TldParser $defaultParser = null): TldServer
+    public function createTldSever(array $config, ?TldParser $defaultParser = null): TldServer
     {
         return new TldServer(
             $config['zone'] ?? '',
@@ -116,7 +116,7 @@ class Factory implements IFactory
      * @param TldParser|null $defaultParser
      * @return TldParser
      */
-    public function createTldSeverParser(array $config, TldParser $defaultParser = null): TldParser
+    public function createTldSeverParser(array $config, ?TldParser $defaultParser = null): TldParser
     {
         $options = $config['parserOptions'] ?? [];
         if (isset($config['parserClass'])) {
@@ -204,7 +204,7 @@ class Factory implements IFactory
      * @param AsnParser $defaultParser
      * @return AsnServer[]
      */
-    public function createAsnSevers($configs = null, AsnParser $defaultParser = null): array
+    public function createAsnSevers($configs = null, ?AsnParser $defaultParser = null): array
     {
         $configs = is_array($configs) ? $configs : Config::load("module.asn.servers");
         $defaultParser = $defaultParser ?: $this->createAsnParser();
@@ -220,7 +220,7 @@ class Factory implements IFactory
      * @param AsnParser $defaultParser
      * @return AsnServer
      */
-    public function createAsnSever($config, AsnParser $defaultParser = null)
+    public function createAsnSever($config, ?AsnParser $defaultParser = null)
     {
         return new AsnServer(
             $config['host'] ?? '',
@@ -234,7 +234,7 @@ class Factory implements IFactory
      * @param AsnParser|null $defaultParser
      * @return AsnParser
      */
-    public function createAsnSeverParser(array $config, AsnParser $defaultParser = null): AsnParser
+    public function createAsnSeverParser(array $config, ?AsnParser $defaultParser = null): AsnParser
     {
         if (isset($config['parserClass'])) {
             return $this->createAsnParserByClass($config['parserClass']);

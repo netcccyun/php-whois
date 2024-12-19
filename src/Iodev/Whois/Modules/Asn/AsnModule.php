@@ -57,7 +57,7 @@ class AsnModule extends Module
      * @throws ConnectionException
      * @throws WhoisException
      */
-    public function lookupAsn($asn, AsnServer $server = null)
+    public function lookupAsn($asn, ?AsnServer $server = null)
     {
         if ($server) {
             return $this->loadResponse($asn, $server);
@@ -73,7 +73,7 @@ class AsnModule extends Module
      * @throws ConnectionException
      * @throws WhoisException
      */
-    public function loadAsnInfo($asn, AsnServer $server = null)
+    public function loadAsnInfo($asn, ?AsnServer $server = null)
     {
         if ($server) {
             $resp = $this->loadResponse($asn, $server);

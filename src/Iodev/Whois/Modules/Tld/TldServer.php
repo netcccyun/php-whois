@@ -20,7 +20,7 @@ class TldServer
      * @param TldParser $defaultParser
      * @return TldServer
      */
-    public static function fromData($data, TldParser $defaultParser = null)
+    public static function fromData($data, ?TldParser $defaultParser = null)
     {
         return Factory::get()->createTldSever($data, $defaultParser);
     }
@@ -30,7 +30,7 @@ class TldServer
      * @param TldParser $defaultParser
      * @return TldServer[]
      */
-    public static function fromDataList($dataList, TldParser $defaultParser = null)
+    public static function fromDataList($dataList, ?TldParser $defaultParser = null)
     {
         return Factory::get()->createTldSevers($dataList, $defaultParser);
     }
@@ -42,7 +42,7 @@ class TldServer
      * @param TldParser $parser
      * @param string $queryFormat
      */
-    public function __construct($zone, $host, $centralized, TldParser $parser, $queryFormat = null)
+    public function __construct($zone, $host, $centralized, ?TldParser $parser, $queryFormat = null)
     {
         $this->uid = ++self::$counter;
         $this->zone = strval($zone);
@@ -76,7 +76,7 @@ class TldServer
 
     /** @var string */
     protected $host;
-    
+
     /** @var TldParser */
     protected $parser;
 

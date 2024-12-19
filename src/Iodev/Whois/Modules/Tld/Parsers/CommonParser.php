@@ -12,6 +12,9 @@ use Iodev\Whois\Modules\Tld\TldParser;
 
 class CommonParser extends TldParser
 {
+    /** @var array */
+    protected $parserTypes = [];
+
     /** @var string */
     protected $headerKey = 'HEADER';
 

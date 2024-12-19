@@ -13,7 +13,7 @@ trait WhoisDeprecated
      * @param ILoader $loader
      * @return Whois
      */
-    public static function create(ILoader $loader = null)
+    public static function create(?ILoader $loader = null)
     {
         return Factory::get()->createWhois($loader);
     }
