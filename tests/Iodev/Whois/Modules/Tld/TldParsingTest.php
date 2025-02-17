@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Iodev\Whois\Modules\Tld;
 
 use InvalidArgumentException;
@@ -52,6 +54,9 @@ class TldParsingTest extends TestCase
      */
     private static function parseExpectedDate($datestr)
     {
+        if ($datestr === null) {
+            $datestr = '';
+        }
         // replace %param by value
         if (strpos($datestr, '%') !== false) {
             $datestr = preg_replace('~^%Y(-\d\d-\d\dT\d\d:\d\d)$~', date('Y').'\1', $datestr);
@@ -481,6 +486,10 @@ class TldParsingTest extends TestCase
             [ "free.hk", ".hk/free.txt", null ],
             // [ "google.com.hk", ".hk/google.com.hk.txt", ".hk/google.com.hk.json" ],
 
+            // .HK.COM
+            [ "free.hk.com", ".hk.com/free.txt", null ],
+            [ "udr.hk.com", ".hk.com/udr.hk.com.txt", ".hk.com/udr.hk.com.json" ],
+
             // .HR
             [ "free.hr", ".hr/free.txt", null ],
             [ "google.hr", ".hr/google.hr.txt", ".hr/google.hr.json" ],
@@ -564,6 +573,10 @@ class TldParsingTest extends TestCase
             // .KI
             [ "free.ki", ".ki/free.txt", null ],
             [ "google.ki", ".ki/google.ki.txt", ".ki/google.ki.json" ],
+
+            // .KIDS
+            [ "free.kids", ".kids/free.txt", null ],
+            [ "google.kids", ".kids/google.kids.txt", ".kids/google.kids.json" ],
 
             // .KOELN
             [ "free.koeln", ".koeln/free.txt", null ],
