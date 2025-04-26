@@ -13,6 +13,7 @@ use Iodev\Whois\Modules\Tld\Parsers\AutoParser;
 use Iodev\Whois\Modules\Tld\Parsers\BlockParser;
 use Iodev\Whois\Modules\Tld\Parsers\CommonParser;
 use Iodev\Whois\Modules\Tld\Parsers\IndentParser;
+use Iodev\Whois\Modules\Tld\Parsers\RdapParser;
 use Iodev\Whois\Modules\Tld\TldModule;
 use Iodev\Whois\Modules\Tld\TldParser;
 use Iodev\Whois\Modules\Tld\TldServer;
@@ -107,7 +108,8 @@ class Factory implements IFactory
             $config['host'] ?? '',
             !empty($config['centralized']),
             $this->createTldSeverParser($config, $defaultParser),
-            $config['queryFormat'] ?? null
+            $config['queryFormat'] ?? null,
+            $config['rdap'] ?? false
         );
     }
 
@@ -145,6 +147,7 @@ class Factory implements IFactory
             TldParser::BLOCK => BlockParser::class,
             TldParser::INDENT => IndentParser::class,
             TldParser::INDENT_AUTOFIX => IndentParser::class,
+            TldParser::RDAP => RdapParser::class,
         ];
         return $this->createTldParserByClass($d[$type], $type);
     }

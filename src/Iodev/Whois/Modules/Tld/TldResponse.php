@@ -11,6 +11,7 @@ use Iodev\Whois\DataObject;
  * @property string $text
  * @property string $host
  * @property string $domain
+ * @property int $httpCode
  */
 class TldResponse extends DataObject
 {
@@ -22,5 +23,6 @@ class TldResponse extends DataObject
         'text' => '',
         'host' => '',
         'domain' => '',
+        'httpCode' => 0,
     ];
 }

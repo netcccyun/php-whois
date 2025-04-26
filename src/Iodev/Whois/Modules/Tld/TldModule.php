@@ -82,10 +82,9 @@ class TldModule extends Module
      */
     public function matchServers($domain, $quiet = false)
     {
-        $domainAscii = DomainHelper::toAscii($domain);
         $servers = [];
         foreach ($this->servers as $server) {
-            $matchedCount = $server->matchDomainZone($domainAscii);
+            $matchedCount = $server->matchDomainZone($domain);
             if ($matchedCount) {
                 $servers[] = $server;
             }
@@ -118,6 +117,7 @@ class TldModule extends Module
      */
     public function lookupDomain($domain, ?TldServer $server = null)
     {
+        $domain = DomainHelper::toAscii($domain);
         $servers = $server ? [$server] : $this->matchServers($domain);
         list ($response) = $this->loadDomainData($domain, $servers);
         return $response;
@@ -133,6 +133,7 @@ class TldModule extends Module
      */
     public function loadDomainInfo($domain, ?TldServer $server = null)
     {
+        $domain = DomainHelper::toAscii($domain);
         $servers = $server ? [$server] : $this->matchServers($domain);
         list (, $info) = $this->loadDomainData($domain, $servers);
         return $info;
@@ -150,13 +151,23 @@ class TldModule extends Module
     public function loadResponse(TldServer $server, $domain, $strict = false, $host = null)
     {
         $host = $host ?: $server->getHost();
-        $query = $server->buildDomainQuery($domain, $strict);
-        return new TldResponse([
-            'domain' => $domain,
-            'host' => $host,
-            'query' => $query,
-            'text' => $this->getLoader()->loadText($host, $query),
-        ]);
+        if ($server->isRdap()) {
+            $result = $server->getRdapData($domain);
+            return new TldResponse([
+                'domain' => $domain,
+                'host' => $host,
+                'text' => $result[1],
+                'httpCode' => $result[0],
+            ]);
+        } else {
+            $query = $server->buildDomainQuery($domain, $strict);
+            return new TldResponse([
+                'domain' => $domain,
+                'host' => $host,
+                'query' => $query,
+                'text' => $this->getLoader()->loadText($host, $query),
+            ]);
+        }
     }
 
     /**
@@ -169,7 +180,6 @@ class TldModule extends Module
     public function loadDomainData(string $domain, array $servers): array
     {
         $this->lastUsedServers = [];
-        $domain = DomainHelper::toAscii($domain);
         $response = null;
         $info = null;
         $lastError = null;

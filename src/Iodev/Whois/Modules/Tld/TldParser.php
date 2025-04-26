@@ -14,6 +14,7 @@ abstract class TldParser
     const BLOCK = 'block';
     const INDENT = 'indent';
     const INDENT_AUTOFIX = 'indentAutofix';
+    const RDAP = 'rdap';
 
     /**
      * @var array

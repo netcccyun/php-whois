@@ -10,7 +10,7 @@ use Iodev\Whois\Helpers\TextHelper;
 
 class CurlLoader implements ILoader
 {
-    public function __construct($timeout = 60)
+    public function __construct($timeout = 10)
     {
         $this->setTimeout($timeout);
         $this->options = [];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Iodev\Whois\Modules\Tld;
 
 use InvalidArgumentException;
+use Iodev\Whois\Exceptions\ConnectionException;
 use Iodev\Whois\Factory;
 
 /**
@@ -42,7 +43,7 @@ class TldServer
      * @param TldParser $parser
      * @param string $queryFormat
      */
-    public function __construct($zone, $host, $centralized, ?TldParser $parser, $queryFormat = null)
+    public function __construct($zone, $host, $centralized, ?TldParser $parser, $queryFormat = null, $rdap = false)
     {
         $this->uid = ++self::$counter;
         $this->zone = strval($zone);
@@ -60,6 +61,10 @@ class TldServer
         $this->centralized = (bool)$centralized;
         $this->parser = $parser;
         $this->queryFormat = !empty($queryFormat) ? strval($queryFormat) : "%s\r\n";
+        $this->rdap = (bool)$rdap;
+        if ($this->rdap) {
+            $this->parser = Factory::get()->createTldParser(TldParser::RDAP);
+        }
     }
 
     /** @var string */
@@ -82,6 +87,9 @@ class TldServer
 
     /** @var string */
     protected $queryFormat;
+
+    /** @var bool */
+    protected $rdap;
 
     /**
      * @return string
@@ -168,6 +176,14 @@ class TldServer
     }
 
     /**
+     * @return bool
+     */
+    public function isRdap()
+    {
+        return (bool)$this->rdap;
+    }
+
+    /**
      * @param string $domain
      * @param bool $strict
      * @return string
@@ -176,5 +192,40 @@ class TldServer
     {
         $query = sprintf($this->queryFormat, $domain);
         return $strict ? "=$query" : $query;
+    }
+
+    /**
+     * @param string $domain
+     * @return array
+     */
+    public function getRdapData($domain)
+    {
+        $domain = strtolower(trim($domain));
+        if (substr($this->host, -1) !== '/') {
+            $this->host .= '/';
+        }
+        $url = $this->host . 'domain/' . urlencode($domain);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, "PHP RDAP Client");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/rdap+json',
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec($ch);
+        $errstr = curl_error($ch);
+        $errno = curl_errno($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($errno) {
+            throw new ConnectionException($errstr, $errno);
+        }
+
+        return [$httpCode, $result];
     }
 }

@@ -1,7 +1,7 @@
 # PHP WHOIS
 
 [![PHP version](https://img.shields.io/badge/php-%3E%3D7.2-8892BF.svg)](https://secure.php.net/)
-[![Packagist](https://img.shields.io/packagist/v/io-developer/php-whois.svg)](https://packagist.org/packages/io-developer/php-whois)
+[![Packagist](https://img.shields.io/packagist/v/cccyun/php-whois.svg)](https://packagist.org/packages/cccyun/php-whois)
 
 PHP WHOIS client implementation. Sends the queries directly to the WHOIS services.
 
@@ -29,12 +29,12 @@ Optional:
 
 ##### Composer:
 ````
-composer require io-developer/php-whois
+composer require cccyun/php-whois
 ````
 or composer.json:
 ````
 "require": {
-    "io-developer/php-whois": "^4.0"
+    "cccyun/php-whois": "^4.0"
 }
 ````
 

@@ -1,5 +1,5 @@
 {
-    "name": "datingvip/php-whois",
+    "name": "cccyun/php-whois",
     "description": "PHP WHOIS provides parsed and raw whois lookup of domains and ASN routes. PHP 5.4+ and 7+ compatible ",
     "keywords": [
         "php",
@@ -16,12 +16,11 @@
     ],
     "type": "library",
     "license": "MIT",
-    "homepage": "https://github.com/io-developer/php-whois",
+    "homepage": "https://github.com/netcccyun/php-whois",
     "authors": [
         {
-            "name": "Sergey Sedyshev",
-            "email": "i.o.developer@gmail.com",
-            "homepage": "https://github.com/io-developer"
+            "name": "caihong",
+            "email": "admin@cccyun.cn"
         }
     ],
     "require" : {

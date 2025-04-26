@@ -698,6 +698,9 @@ class TldParsingTest extends TestCase
             [ "free.navy", ".navy/free.txt", null ],
             [ "nic.navy", ".navy/nic.navy.txt", ".navy/nic.navy.json" ],
 
+            // .NA
+            [ "domaine.nc", ".nc/domaine.nc.txt", ".nc/domaine.nc.json" ],
+
             // .NET
             [ "free.net", ".net/free.txt", null ],
             [ "speedtest.net", ".net/speedtest.net.txt", ".net/speedtest.net.json" ],
@@ -830,6 +833,10 @@ class TldParsingTest extends TestCase
             [ "google.se", ".se/google.se.txt", ".se/google.se.json" ],
             [ "öppettider.se", ".se/xn--ppettider-z7a.se.txt", ".se/xn--ppettider-z7a.se.json" ],
             [ "xn--ppettider-z7a.se", ".se/xn--ppettider-z7a.se.txt", ".se/xn--ppettider-z7a.se.json" ],
+
+            // .COM.SE
+            [ "free.com.se", ".com.se/free.txt", null ],
+            [ "www.com.se", ".com.se/www.com.se.txt", ".com.se/www.com.se.json" ],
 
             // .SG
             [ "free.sg", ".sg/free.txt", null ],

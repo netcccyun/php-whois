@@ -41,4 +41,13 @@ trait TldResponseDeprected
     {
         return $this->domain;
     }
+
+    /**
+     * @deprecated will be removed in v4.2
+     * @return int
+     */
+    public function getHttpCode()
+    {
+        return $this->httpCode;
+    }
 }

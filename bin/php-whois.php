@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Iodev\Whois\Factory;
+use Iodev\Whois\Helpers\DomainHelper;
 
 $scriptDir = '.';
 if (preg_match('~^(.+?)/[^/]+$~ui', $_SERVER['SCRIPT_FILENAME'], $m)) {
@@ -110,6 +111,7 @@ function info(string $domain, array $options = [])
     }
 
     $tld = Factory::get()->createWhois($loader)->getTldModule();
+    $domain = DomainHelper::toAscii($domain);
     $servers = $tld->matchServers($domain);
 
     if (!empty($options['host'])) {
@@ -126,7 +128,8 @@ function info(string $domain, array $options = [])
                 $host,
                 $server->isCentralized(),
                 $server->getParser(),
-                $server->getQueryFormat()
+                $server->getQueryFormat(),
+                $server->isRdap()
             );
         }, $filteredServers);
     }
@@ -144,7 +147,8 @@ function info(string $domain, array $options = [])
                 $server->getHost(),
                 $server->isCentralized(),
                 $parser,
-                $server->getQueryFormat()
+                $server->getQueryFormat(),
+                $server->isRdap()
             );
         }, $servers);
     }
