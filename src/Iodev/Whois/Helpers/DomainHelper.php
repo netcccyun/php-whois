@@ -30,7 +30,7 @@ class DomainHelper
             return "";
         }
         $cor = self::correct($domain);
-        return Factory::get()->createPunycode()->encode($cor);
+        return idn_to_ascii($cor);
     }
     
     /**
@@ -43,7 +43,7 @@ class DomainHelper
             return "";
         }
         $cor = self::correct($domain);
-        return Factory::get()->createPunycode()->decode($cor);
+        return idn_to_utf8($cor);
     }
 
     /**

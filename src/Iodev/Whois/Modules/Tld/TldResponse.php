@@ -15,7 +15,6 @@ use Iodev\Whois\DataObject;
  */
 class TldResponse extends DataObject
 {
-    use TldResponseDeprected;
 
     /** @var string */
     protected $dataDefault = [

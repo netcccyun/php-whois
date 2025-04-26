@@ -17,8 +17,6 @@ use Iodev\Whois\Modules\Tld\Parsers\RdapParser;
 use Iodev\Whois\Modules\Tld\TldModule;
 use Iodev\Whois\Modules\Tld\TldParser;
 use Iodev\Whois\Modules\Tld\TldServer;
-use Iodev\Whois\Punycode\IntlPunycode;
-use Iodev\Whois\Punycode\IPunycode;
 
 class Factory implements IFactory
 {
@@ -32,11 +30,6 @@ class Factory implements IFactory
             $instance = new static();
         }
         return $instance;
-    }
-
-    public function createPunycode(): IPunycode
-    {
-            return new IntlPunycode();
     }
 
     /**

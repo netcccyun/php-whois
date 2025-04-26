@@ -6,7 +6,6 @@ namespace Iodev\Whois\Modules\Tld;
 
 abstract class TldParser
 {
-    use TldParserDeprecated;
 
     const AUTO = 'auto';
     const COMMON = 'common';
