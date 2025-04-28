@@ -48,12 +48,9 @@ class SocketLoader implements ILoader
      */
     public function loadText($whoisHost, $query)
     {
-        $this->setupEnv();
-        if (!gethostbynamel($whoisHost)) {
-            $this->teardownEnv();
+        if (!gethostbyname($whoisHost)) {
             throw new ConnectionException("Host is unreachable: $whoisHost");
         }
-        $this->teardownEnv();
         $errno = null;
         $errstr = null;
         $handle = @fsockopen($whoisHost, 43, $errno, $errstr, $this->timeout);
@@ -90,22 +87,5 @@ class SocketLoader implements ILoader
             throw new WhoisException($m[0]);
         }
         return $text;
-    }
-
-    /**
-     *
-     */
-    private function setupEnv()
-    {
-        $this->origEnv = getenv('RES_OPTIONS');
-        putenv("RES_OPTIONS=retrans:1 retry:1 timeout:{$this->timeout} attempts:1");
-    }
-
-    /**
-     *
-     */
-    private function teardownEnv()
-    {
-        $this->origEnv === false ? putenv("RES_OPTIONS") : putenv("RES_OPTIONS={$this->origEnv}");
     }
 }
