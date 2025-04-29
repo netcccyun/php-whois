@@ -487,7 +487,7 @@
   {"zone": ".ifm", "host": "whois.nic.ifm"},
   {"zone": ".ikano", "host": "whois.nic.ikano"},
   {"zone": ".il", "host": "whois.isoc.org.il", "parserType": "block"},
-  {"zone": ".im", "host": "whois.nic.im"},
+  {"zone": ".im", "host": "whois.nic.im", "parserType": "commonFlat", "parserOptions": {"inversedDateMMDD": true} },
   {"zone": ".imamat", "host": "whois.nic.imamat"},
   {"zone": ".immo", "host": "whois.nic.immo"},
   {"zone": ".immobilien", "host": "whois.nic.immobilien"},

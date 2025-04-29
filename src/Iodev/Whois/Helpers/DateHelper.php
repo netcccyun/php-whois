@@ -30,6 +30,10 @@ class DateHelper
             $s = "{$m[3]}-{$mon}-{$m[1]}T00:00:00";
         } elseif (preg_match('/^(\d{4})(\d{2})(\d{2})$/ui', preg_replace('/\s*#.*/ui', '', $s), $m)) {
             $s = "{$m[1]}-{$m[2]}-{$m[3]}T00:00:00";
+        } elseif (preg_match('~^(\d{2})/(\d{2})/(\d{4})\s+(\d{2}:\d{2}:\d{2})$~ui', $s, $m)) {
+            $s = $inverseMMDD
+                ? "{$m[3]}-{$m[2]}-{$m[1]}T{$m[4]}"
+                : "{$m[3]}-{$m[1]}-{$m[2]}T{$m[4]}";
         } elseif (preg_match('~^(\d{2})/(\d{2})/(\d{4})$~ui', $s, $m)) {
             $s = $inverseMMDD
                 ? "{$m[3]}-{$m[2]}-{$m[1]}T00:00:00"

@@ -52,6 +52,9 @@ class DomainHelper
      */
     public static function filterAscii($domain)
     {
+        if (empty($domain) || strlen($domain) >= 255) {
+            return "";
+        }
         $domain = self::correct($domain);
         // Pick first part before space
         $domain = explode(" ", $domain)[0];
