@@ -686,7 +686,6 @@
   {"zone": ".nab", "host": "whois.nic.nab"},
   {"zone": ".nagoya", "host": "whois.nic.nagoya"},
   {"zone": ".nagoya", "host": "whois.gmoregistry.net"},
-  {"zone": ".name", "host": "whois.nic.name"},
   {"zone": ".natura", "host": "whois.gtlds.nic.br"},
   {"zone": ".navy", "host": "whois.nic.navy"},
   {"zone": ".nc", "host": "whois.nc"},
