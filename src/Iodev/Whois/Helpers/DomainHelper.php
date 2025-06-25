@@ -26,6 +26,9 @@ class DomainHelper
      */
     public static function toAscii($domain)
     {
+        if (!is_string($domain)) {
+            return "";
+        }
         if (empty($domain) || strlen($domain) >= 255) {
             return "";
         }
