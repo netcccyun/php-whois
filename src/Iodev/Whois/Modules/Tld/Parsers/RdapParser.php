@@ -57,14 +57,16 @@ class RdapParser extends TldParser
         $creationDate = 0;
         $expirationDate = 0;
         $updatedDate = 0;
-        foreach ($arr['events'] as $event) {
-            if (isset($event['eventAction'])) {
-                if ($event['eventAction'] == 'registration') {
-                    $creationDate = strtotime($event['eventDate']);
-                } elseif ($event['eventAction'] == 'expiration') {
-                    $expirationDate = strtotime($event['eventDate']);
-                } elseif ($event['eventAction'] == 'last changed') {
-                    $updatedDate = strtotime($event['eventDate']);
+        if (isset($arr['events']) && is_array($arr['events'])) {
+            foreach ($arr['events'] as $event) {
+                if (isset($event['eventAction'])) {
+                    if ($event['eventAction'] == 'registration') {
+                        $creationDate = strtotime($event['eventDate']);
+                    } elseif ($event['eventAction'] == 'expiration') {
+                        $expirationDate = strtotime($event['eventDate']);
+                    } elseif ($event['eventAction'] == 'last changed') {
+                        $updatedDate = strtotime($event['eventDate']);
+                    }
                 }
             }
         }
