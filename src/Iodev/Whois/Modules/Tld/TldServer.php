@@ -220,7 +220,9 @@ class TldServer
         $errstr = curl_error($ch);
         $errno = curl_errno($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         if ($errno) {
             throw new ConnectionException($errstr, $errno);
