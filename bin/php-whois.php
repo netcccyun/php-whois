@@ -5,11 +5,13 @@ declare(strict_types=1);
 use Iodev\Whois\Factory;
 use Iodev\Whois\Helpers\DomainHelper;
 
-$scriptDir = '.';
-if (preg_match('~^(.+?)/[^/]+$~ui', $_SERVER['SCRIPT_FILENAME'], $m)) {
-    $scriptDir = $m[1];
+// Works on Windows paths too and when installed as a composer dependency (vendor/<vendor>/<package>/bin)
+foreach ([__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php'] as $autoloadFile) {
+    if (is_file($autoloadFile)) {
+        require $autoloadFile;
+        break;
+    }
 }
-include "$scriptDir/../vendor/autoload.php";
 
 function main($argv)
 {
@@ -24,6 +26,10 @@ function main($argv)
         case 'h':
             help();
             return;
+    }
+    if (in_array($action, ['lookup', 'info'], true) && empty($args[0])) {
+        echo "Domain is required for action: {$action}\n";
+        exit(1);
     }
     switch ($action) {
         case 'lookup':
@@ -47,7 +53,8 @@ function parseOpts(string $str): array
     $rest = trim($str);
     while (preg_match('~--([-_a-z\d]+)(\s+|=)(\'([^\']+)\'|[^-\s]+)~ui', $rest, $m, PREG_OFFSET_CAPTURE)) {
         $result[$m[1][0]] = $m[4][0] ?? $m[3][0];
-        $rest = trim(mb_substr($rest, $m[0][1] + mb_strlen($m[0][0])));
+        // PREG_OFFSET_CAPTURE offsets are in bytes, so byte-based substr/strlen must be used
+        $rest = trim((string)substr($rest, $m[0][1] + strlen($m[0][0])));
     }
     return $result;
 }

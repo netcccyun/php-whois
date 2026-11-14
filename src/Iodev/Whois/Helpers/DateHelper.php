@@ -53,11 +53,11 @@ class DateHelper
     public static function parseDateInText($text)
     {
         if (preg_match('~\b(\d{1,2})(nd|th|st)?[-\s]+([a-z]+)[-\s]+(\d{4})\b~ui', $text, $m)) {
-            return strtotime("{$m[1]} {$m[3]} {$m[4]} 00:00");
+            return (int)strtotime("{$m[1]} {$m[3]} {$m[4]} 00:00");
         }
         if (preg_match('~\b(\d{1,2})(nd|th|st)?[-\s]+([a-z]+)\b~ui', $text, $m)) {
             $y = date('Y');
-            return strtotime("{$m[1]} {$m[3]} $y 00:00");
+            return (int)strtotime("{$m[1]} {$m[3]} $y 00:00");
         }
         return 0;
     }
@@ -93,6 +93,8 @@ class DateHelper
             'dec' => '12',
             'december' => '12',
         ];
-        return $mond[strtolower($mon)];
+        // Unknown month names (e.g. localized) must not raise "Undefined array key" warnings;
+        // '' keeps the previous result (an unparsable date => 0)
+        return $mond[strtolower((string)$mon)] ?? '';
     }
 }

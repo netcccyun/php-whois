@@ -38,6 +38,16 @@ class DataObject implements \JsonSerializable
     }
 
     /**
+     * Makes isset()/empty() work with magic properties
+     * @param string $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return $this->__get($key) !== null;
+    }
+
+    /**
      * @param $key
      * @param mixed $default
      * @return mixed
@@ -67,7 +77,7 @@ class DataObject implements \JsonSerializable
         return $data;
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

@@ -111,7 +111,7 @@ class CommonParser extends TldParser
                 ->selectKeyGroups($this->nameServersKeysGroups)
                 ->mapAsciiServer()
                 ->removeEmpty()
-                ->removeDuplicates(11)
+                ->removeDuplicates()
                 ->getAll(),
 
             "dnssec" => $sel->clean()
@@ -123,17 +123,17 @@ class CommonParser extends TldParser
             "creationDate" => $sel->clean()
                 ->selectKeys($this->creationDateKeys)
                 ->mapUnixTime($this->getOption('inversedDateMMDD', false))
-                ->getFirst(''),
+                ->getFirst(0),
 
             "expirationDate" => $sel->clean()
                 ->selectKeys($this->expirationDateKeys)
                 ->mapUnixTime($this->getOption('inversedDateMMDD', false))
-                ->getFirst(''),
+                ->getFirst(0),
 
             "updatedDate" => $sel->clean()
                 ->selectKeys($this->updatedDateKeys)
                 ->mapUnixTime($this->getOption('inversedDateMMDD', false))
-                ->getFirst(''),
+                ->getFirst(0),
 
             "owner" => $sel->clean()
                 ->selectKeys($this->ownerKeys)

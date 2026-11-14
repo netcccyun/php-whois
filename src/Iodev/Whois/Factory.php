@@ -142,6 +142,9 @@ class Factory implements IFactory
             TldParser::INDENT_AUTOFIX => IndentParser::class,
             TldParser::RDAP => RdapParser::class,
         ];
+        if (!isset($d[$type])) {
+            throw new \InvalidArgumentException("Unknown TLD parser type: '$type'");
+        }
         return $this->createTldParserByClass($d[$type], $type);
     }
 

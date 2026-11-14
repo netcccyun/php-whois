@@ -133,7 +133,7 @@ class GroupSelector
     public function mapDomain()
     {
         foreach ($this->items as &$item) {
-            if ($item && preg_match('~([-\pL\d]+\.)+[-\pL\d]+~ui', $item, $m)) {
+            if ($item && is_string($item) && preg_match('~([-\pL\d]+\.)+[-\pL\d]+~ui', $item, $m)) {
                 $item = DomainHelper::filterAscii(DomainHelper::toAscii($m[0]));
             } else {
                 $item = '';

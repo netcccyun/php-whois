@@ -200,13 +200,15 @@ class TldServer
      */
     public function getRdapData($domain)
     {
-        $domain = strtolower(trim($domain));
-        if (substr($this->host, -1) !== '/') {
-            $this->host .= '/';
-        }
-        $url = $this->host . 'domain/' . urlencode($domain);
+        $domain = strtolower(trim((string)$domain));
+        // Don't modify $this->host: the object is immutable and the host is compared elsewhere
+        $baseUrl = substr($this->host, -1) !== '/' ? $this->host . '/' : $this->host;
+        $url = $baseUrl . 'domain/' . urlencode($domain);
 
         $ch = curl_init();
+        if (!$ch) {
+            throw new ConnectionException('Curl not created');
+        }
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -224,10 +226,10 @@ class TldServer
             curl_close($ch);
         }
 
-        if ($errno) {
-            throw new ConnectionException($errstr, $errno);
+        if ($errno || $result === false) {
+            throw new ConnectionException($errstr ?: "RDAP request failed: $url", $errno);
         }
 
-        return [$httpCode, $result];
+        return [(int)$httpCode, (string)$result];
     }
 }

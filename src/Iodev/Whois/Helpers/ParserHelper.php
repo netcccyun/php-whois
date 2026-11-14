@@ -139,7 +139,10 @@ class ParserHelper
         unset($node);
         foreach ($nodes as &$node) {
             if (!empty($node['children']) && $maxDepth > 1) {
-                $node['children'] = self::blockToIndentedNodes($node['children'], $maxDepth - 1);
+                // Historically this call passed ($maxDepth - 1) as $biasIndentFn, so nested levels were parsed
+                // without the bias function and with the default depth. All parser configs and test fixtures
+                // (e.g. .jp) depend on that behavior, so it is kept here - just written explicitly.
+                $node['children'] = self::blockToIndentedNodes($node['children']);
             }
             if (empty($node['children'])) {
                 $node = $node['line'];
@@ -271,7 +274,11 @@ class ParserHelper
         $states = [];
         $rawstates = is_array($rawstates) ? $rawstates : [ strval($rawstates) ];
         foreach ($rawstates as $rawstate) {
-            if (preg_match('/^\s*((\d{3}\s+)?[a-z]{2,}.*)\s*/ui', $rawstate, $m)) {
+            // Values may be null (see GroupFilter::handleEmpty) or nested arrays
+            if (!is_scalar($rawstate)) {
+                continue;
+            }
+            if (preg_match('/^\s*((\d{3}\s+)?[a-z]{2,}.*)\s*/ui', (string)$rawstate, $m)) {
                 $state = mb_strtolower($m[1]);
                 $state = $removeExtra ? trim((string)preg_replace('~\(.+?\)|((- )?http|<a href).+~ui', '', $state)) : $state;
 

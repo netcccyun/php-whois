@@ -59,6 +59,8 @@ class TldModule extends Module
      */
     public function setServers($servers)
     {
+        // Indexes are used in arithmetic below - string keys would throw a TypeError on PHP 8
+        $servers = array_values($servers);
         $weightMap = [];
         foreach ($servers as $index => $server) {
             $parts = explode('.', $server->getZone());
@@ -117,7 +119,7 @@ class TldModule extends Module
      */
     public function lookupDomain($domain, ?TldServer $server = null)
     {
-        $domain = DomainHelper::toAscii($domain);
+        $domain = $this->normalizeDomain($domain);
         $servers = $server ? [$server] : $this->matchServers($domain);
         list ($response) = $this->loadDomainData($domain, $servers);
         return $response;
@@ -133,10 +135,25 @@ class TldModule extends Module
      */
     public function loadDomainInfo($domain, ?TldServer $server = null)
     {
-        $domain = DomainHelper::toAscii($domain);
+        $domain = $this->normalizeDomain($domain);
         $servers = $server ? [$server] : $this->matchServers($domain);
         list (, $info) = $this->loadDomainData($domain, $servers);
         return $info;
+    }
+
+    /**
+     * @param string $domain
+     * @return string
+     * @throws WhoisException
+     */
+    protected function normalizeDomain($domain)
+    {
+        $ascii = DomainHelper::toAscii($domain);
+        if ($ascii === '') {
+            $str = is_scalar($domain) ? (string)$domain : gettype($domain);
+            throw new WhoisException("Invalid domain name '$str'");
+        }
+        return $ascii;
     }
 
     /**
@@ -218,7 +235,8 @@ class TldModule extends Module
         if (!$outInfo && $lastError && $host == $server->getHost() && $strict) {
             throw $lastError;
         }
-        if (!$strict && !$outInfo) {
+        // "Strict" (=domain) queries make no sense for RDAP and would only repeat the same HTTP request
+        if (!$strict && !$outInfo && !$server->isRdap()) {
             $this->loadParsedTo($tmpResponse, $tmpInfo, $server, $domain, true, $host, $lastError);
             $outResponse = $tmpInfo ? $tmpResponse : $outResponse;
             $outInfo = $tmpInfo ?: $outInfo;

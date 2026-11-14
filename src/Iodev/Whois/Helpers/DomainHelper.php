@@ -11,13 +11,14 @@ class DomainHelper
     /**
      * @param string $a
      * @param string $b
-     * @return string
+     * @return bool
      */
     public static function compareNames($a, $b)
     {
         $a = self::toAscii($a);
         $b = self::toAscii($b);
-        return ($a == $b);
+        // Two invalid (unconvertible) names must not be considered equal
+        return $a !== '' && $a === $b;
     }
     
     /**
@@ -33,20 +34,29 @@ class DomainHelper
             return "";
         }
         $cor = self::correct($domain);
-        return idn_to_ascii($cor);
+        if ($cor === '') {
+            return "";
+        }
+        // idn_to_ascii() returns false on failure; always return a string (callers use strict_types)
+        $res = idn_to_ascii($cor, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return is_string($res) ? $res : "";
     }
-    
+
     /**
      * @param string $domain
      * @return string
      */
     public static function toUnicode($domain)
     {
-        if (empty($domain) || strlen($domain) >= 255) {
+        if (!is_string($domain) || empty($domain) || strlen($domain) >= 255) {
             return "";
         }
         $cor = self::correct($domain);
-        return idn_to_utf8($cor);
+        if ($cor === '') {
+            return "";
+        }
+        $res = idn_to_utf8($cor, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return is_string($res) ? $res : "";
     }
 
     /**
@@ -55,7 +65,7 @@ class DomainHelper
      */
     public static function filterAscii($domain)
     {
-        if (empty($domain) || strlen($domain) >= 255) {
+        if (!is_string($domain) || empty($domain) || strlen($domain) >= 255) {
             return "";
         }
         $domain = self::correct($domain);

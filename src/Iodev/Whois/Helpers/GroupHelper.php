@@ -12,6 +12,10 @@ class GroupHelper
      */
     public static function getMatcher($ignoreCase = true) {
         return function($needle, $subject) use ($ignoreCase) {
+            // Nested values can't be compared as strings ("Array to string conversion" warning)
+            if (is_array($needle) || is_array($subject)) {
+                return false;
+            }
             $needle = (string)$needle;
             $subject = (string)$subject;
             if ($needle === $subject) {
@@ -31,9 +35,13 @@ class GroupHelper
      */
     public static function toLowerCase($group, $keysOnly = false)
     {
+        // mb_strtolower() throws a TypeError for int keys / non-string values under strict_types
+        $lower = function($v) {
+            return is_string($v) ? mb_strtolower($v) : $v;
+        };
         return $keysOnly
-            ? self::mapRecursiveKeys($group, 'mb_strtolower')
-            : self::mapRecursive($group, 'mb_strtolower');
+            ? self::mapRecursiveKeys($group, $lower)
+            : self::mapRecursive($group, $lower);
     }
 
     /**
@@ -133,12 +141,15 @@ class GroupHelper
     public static function renderSubsets($subsets, $params)
     {
         array_walk_recursive($subsets, function(&$val) use ($params) {
-            $origVal = (string)$val;
+            if (!is_string($val)) {
+                return;
+            }
+            $origVal = $val;
             $val = preg_replace_callback('~\\$[a-z][a-z\d]*\b~ui', function($m) use ($origVal, $params) {
                 $arg = $m[0];
-                $newVal = isset($params[$arg]) ? $params[$arg] : $arg;
+                $newVal = isset($params[$arg]) ? (string)$params[$arg] : $arg;
                 if (strlen($origVal) > 1 && $origVal[0] == '~') {
-                    $newVal = preg_quote($newVal);
+                    $newVal = preg_quote($newVal, '~');
                 }
                 return $newVal;
             }, $val);

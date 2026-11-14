@@ -116,8 +116,8 @@ class TldInfo extends DataObject
     public function isValuable($badFirstStatesDict = [])
     {
         $states = $this->states;
-        $firstState = empty($states) ? '' : reset($states);
-        $firstState = mb_strtolower(trim($firstState));
+        $firstState = empty($states) || !is_array($states) ? '' : reset($states);
+        $firstState = is_scalar($firstState) ? mb_strtolower(trim((string)$firstState)) : '';
         if (!empty($badFirstStatesDict[$firstState])) {
             return false;
         }

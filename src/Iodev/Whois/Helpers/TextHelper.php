@@ -19,11 +19,18 @@ class TextHelper
         if (mb_check_encoding($text, 'utf-8')) {
             return $text;
         }
+        // iconv() returns false on undefined bytes - never return false where a string is expected
         if (mb_check_encoding($text, 'windows-1252')) {
-            return iconv('windows-1252', 'utf-8', $text);
+            $converted = @iconv('windows-1252', 'utf-8', $text);
+            if ($converted !== false) {
+                return $converted;
+            }
         }
         if (mb_check_encoding($text, 'windows-1251')) {
-            return iconv('windows-1251', 'utf-8', $text);
+            $converted = @iconv('windows-1251', 'utf-8', $text);
+            if ($converted !== false) {
+                return $converted;
+            }
         }
         return $text;
     }

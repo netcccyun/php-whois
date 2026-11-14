@@ -10,6 +10,7 @@ class ServerMismatchException extends \Exception
 {
     public function __construct($message = "", $code = 0, ?Throwable $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        // Cast explicitly: under strict_types a null message/code (e.g. from fsockopen or curl) would throw a TypeError
+        parent::__construct((string)$message, (int)$code, $previous);
     }
 }

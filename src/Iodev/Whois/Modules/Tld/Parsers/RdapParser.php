@@ -41,15 +41,18 @@ class RdapParser extends TldParser
             return null;
         }
         $arr = json_decode($response->text, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($arr)) {
             return null;
         }
 
         $nameServers = [];
-        if (!empty($arr['nameservers'])) {
+        if (!empty($arr['nameservers']) && is_array($arr['nameservers'])) {
             foreach ($arr['nameservers'] as $ns) {
-                if (!empty($ns['ldhName']) && !in_array($ns['ldhName'], $nameServers)) {
-                    $nameServers[] = $ns['ldhName'];
+                if (!empty($ns['ldhName']) && is_string($ns['ldhName'])) {
+                    $name = strtolower(rtrim($ns['ldhName'], '.'));
+                    if (!in_array($name, $nameServers, true)) {
+                        $nameServers[] = $name;
+                    }
                 }
             }
         }
@@ -59,21 +62,24 @@ class RdapParser extends TldParser
         $updatedDate = 0;
         if (isset($arr['events']) && is_array($arr['events'])) {
             foreach ($arr['events'] as $event) {
-                if (isset($event['eventAction'])) {
-                    if ($event['eventAction'] == 'registration') {
-                        $creationDate = strtotime($event['eventDate']);
-                    } elseif ($event['eventAction'] == 'expiration') {
-                        $expirationDate = strtotime($event['eventDate']);
-                    } elseif ($event['eventAction'] == 'last changed') {
-                        $updatedDate = strtotime($event['eventDate']);
-                    }
+                // eventDate may be missing; strtotime(null) is a TypeError under strict_types, false is not an int
+                if (!isset($event['eventAction'], $event['eventDate']) || !is_string($event['eventDate'])) {
+                    continue;
+                }
+                $time = (int)strtotime($event['eventDate']);
+                if ($event['eventAction'] == 'registration') {
+                    $creationDate = $time;
+                } elseif ($event['eventAction'] == 'expiration') {
+                    $expirationDate = $time;
+                } elseif ($event['eventAction'] == 'last changed') {
+                    $updatedDate = $time;
                 }
             }
         }
-        $states = $arr['status'] ?? [];
+        $states = isset($arr['status']) && is_array($arr['status']) ? array_values($arr['status']) : [];
 
-        $registrantName = null;
-        $registrarName = null;
+        $registrantName = '';
+        $registrarName = '';
         if (isset($arr['entities']) && is_array($arr['entities'])) {
             foreach ($arr['entities'] as $entity) {
                 if (isset($entity['roles']) && is_array($entity['roles'])) {
@@ -89,7 +95,7 @@ class RdapParser extends TldParser
 
         $data = [
             "parserType" => $this->getType(),
-            "domainName" => strtolower($arr['ldhName'] ?? ''),
+            "domainName" => strtolower(is_string($arr['ldhName'] ?? null) ? $arr['ldhName'] : ''),
             "whoisServer" => '',
             "nameServers" => $nameServers,
             "dnssec" => $dnssec,
@@ -108,11 +114,11 @@ class RdapParser extends TldParser
     {
         if (isset($entity['vcardArray'][1]) && is_array($entity['vcardArray'][1])) {
             foreach ($entity['vcardArray'][1] as $vcardItem) {
-                if (isset($vcardItem[0]) && $vcardItem[0] === 'fn') {
+                if (isset($vcardItem[0], $vcardItem[3]) && $vcardItem[0] === 'fn' && is_string($vcardItem[3])) {
                     return $vcardItem[3];
                 }
             }
         }
-        return null;
+        return '';
     }
 }

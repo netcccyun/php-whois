@@ -48,30 +48,32 @@ class SocketLoader implements ILoader
      */
     public function loadText($whoisHost, $query)
     {
-        if (!gethostbyname($whoisHost)) {
-            throw new ConnectionException("Host is unreachable: $whoisHost");
-        }
-        $errno = null;
-        $errstr = null;
+        // Note: gethostbyname() never returns a falsy value (it returns the input on failure),
+        // so the reachability is checked by fsockopen() itself.
+        $errno = 0;
+        $errstr = '';
         $handle = @fsockopen($whoisHost, 43, $errno, $errstr, $this->timeout);
         if (!$handle) {
-            throw new ConnectionException($errstr, $errno);
+            throw new ConnectionException($errstr ?: "Host is unreachable: $whoisHost", $errno);
         }
 
-        stream_set_timeout($handle, $this->timeout);
+        try {
+            stream_set_timeout($handle, $this->timeout);
 
-        if (false === fwrite($handle, $query)) {
-            throw new ConnectionException("Query cannot be written");
-        }
-        $text = "";
-        while (!feof($handle)) {
-            $chunk = fread($handle, 8192);
-            if (false === $chunk || stream_get_meta_data($handle)['timed_out']) {
-                throw new ConnectionException("Response chunk cannot be read");
+            if (false === fwrite($handle, $query)) {
+                throw new ConnectionException("Query cannot be written");
             }
-            $text .= $chunk;
+            $text = "";
+            while (!feof($handle)) {
+                $chunk = fread($handle, 8192);
+                if (false === $chunk || stream_get_meta_data($handle)['timed_out']) {
+                    throw new ConnectionException("Response chunk cannot be read");
+                }
+                $text .= $chunk;
+            }
+        } finally {
+            fclose($handle);
         }
-        fclose($handle);
 
         return $this->validateResponse(TextHelper::toUtf8($text));
     }
